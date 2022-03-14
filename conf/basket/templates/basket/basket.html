@@ -1,0 +1,86 @@
+{% extends 'base/base.html' %}
+{% block title %} Basket {% endblock %}
+
+{% block body %}
+<main class="pt-5">
+  <div class="container">
+    <h1 class="h5">Shopping basket</h1>
+    {% for item in basket %}
+    {% with product=item.product %}
+    <div data-index="{{product.id}}" class="row mb-4 border product-item">
+
+      <div class="col-md-9 col-lg-10 ps-md-3 ps-lg-10">
+
+          <h1 class="h5 pt-2">{{ product.title }}</h1>
+
+        <div class="border">
+          <div class="col border-bottom">
+            <div class="row p-3">
+              <div class="col-6">Hardback Book</div>
+              <div class="col-6 text-end"><span class="h6 fw-bold">£{{ item.total_price }}</span></div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="row p-3">
+              <div class="col-12">
+                <label for="select">Qty</label>
+                <input id="select{{ product.id }}" type="number" value="{{ item.qty }}">
+                <button type="button" id="update-button" data-index="{{product.id}}"
+                  class="btn btn-outline-secondary btn-sm update-button">
+                  Update
+                </button>
+                <button type="button" id="delete-button" data-index="{{product.id}}"
+                  class="btn btn-outline-secondary btn-sm delete-button">
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endwith %}
+    {% endfor %}
+    <div class="col-12 text-end">
+      <div class="h6 fw-bold">Sub Total: £<div id="subtotal" class="d-inline-flex">{{basket.get_total_price}}</div></div>
+    </div>
+  </div>
+</main>
+{% endblock %}
+
+
+{% block script %}
+     <script>
+    $(document).on("click",'#delete-button',function (){
+        $.ajax({
+            type: "POST",
+            url: '{% url 'basket:basket_delete' %}',
+            data:{
+                productid: $(this).data('index'),
+                csrfmiddlewaretoken: "{{csrf_token}}",
+                action: 'post',
+            },
+            {#success: function (json) {#}
+            {#        document.getElementById("basket-qty").innerHTML = json.qty#}
+            {# },#}
+         })
+    })
+    $(document).on("click",'#update-button', function (){
+        console.log('hie')
+        var prodid = $(this).data('index');
+        qty = $('#select'+prodid).val();
+        $.ajax({
+            type: "POST",
+            url: '{% url 'basket:basket_update' %}',
+            data:{
+                productid: $(this).data('index'),
+                productqty: qty,
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+                action: 'post',
+            },
+
+        })
+    })
+    </script>
+{% endblock %}
+

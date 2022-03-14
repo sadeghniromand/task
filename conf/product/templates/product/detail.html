@@ -1,0 +1,45 @@
+{% extends 'base/base.html' %}
+{% block title %} {{ object.name }} {% endblock %}
+{% block body %}
+    <div><h1>Product name: {{ object.name }}</h1></div>
+    <div><h3>Product Description: {{ object.description }}</h3></div>
+    <h4>Product Price: {{ object.price }}</h4>
+    <br>
+    <br>
+
+    <h6>add to basket</h6>
+    <label for="select">Qty</label>
+    <input type="number" id="qty">
+    <button type="button" class="btn btn-secondary btn-sm" id="add-button"
+            value="{{ object.id }}">Add to basket
+    </button>
+    <br>
+    <br>
+    <h2>Comment</h2>
+    <h6><a href="{% url 'comment:create_comment' object.pk %}">add comment</a></h6>
+    {% for comment in comment %}
+        <h5>User: {{ comment.username }}</h5>
+        <h6>Comment: {{ comment.body }}</h6>
+    {% endfor %}
+{% endblock %}
+
+{% block script %}
+<script>
+
+
+        $(document).on("click",'#add-button',function (){
+        $.ajax({
+            type: "POST",
+            url: '{% url 'basket:basket_add' %}',
+            data:{
+                productid: $('#add-button').val(),
+                productqty: $('#qty').val(),
+                csrfmiddlewaretoken: "{{csrf_token}}"
+            },
+            success: function (json) {
+                    document.getElementById("basket-qty").innerHTML = json.qty
+            },
+         })
+                })
+</script>
+{% endblock %}

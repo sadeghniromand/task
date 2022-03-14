@@ -1,0 +1,18 @@
+{% extends 'base/base.html' %}
+{% block title %} List Product {% endblock %}
+{% block body %}
+
+{% for item in object_list %}
+    <div class="card" style="width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title">{{ item.name }}</h5>
+    <p class="card-text">{{ item.description }}</p>
+    <h6 class="card-footer">{{ item.price }}</h6>
+    <a href="{% url 'product:detail_product' item.id %}" class="card-link">product detail</a>
+  </div>
+</div>
+
+
+
+{% endfor %}
+{% endblock %}
